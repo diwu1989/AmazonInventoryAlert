@@ -41,7 +41,7 @@ async function checkProduct(browser, product) {
 
 async function run() {
   logger.info(`Running product checks on ${PRODUCTS.length} products`);
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
   for (let product of PRODUCTS) {
     let inStock = await checkProduct(browser, product);
     if (inStock) {
