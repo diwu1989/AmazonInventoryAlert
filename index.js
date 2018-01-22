@@ -2,19 +2,7 @@ const axios = require('axios');
 const puppeteer = require('puppeteer');
 const logger = require('logger').createLogger();
 
-const PRODUCTS = [
-  'B01GCAVRSU',
-  'B01HDUVJ1I',
-  'B01IFESATU',
-  'B01IPVTHL8',
-  'B01KMVHB6M',
-  'B01LLAJ8PU',
-  'B076Q62TDF',
-  'B076S4RT1J',
-  'B076XDQ55N',
-  'B077547NV8',
-  'B077Z6LFQ1',
-]
+const PRODUCTS = require('./products');
 
 function getProductUrl(product) {
   return `https://www.amazon.com/gp/offer-listing/${product}/ref=olp_f_new?ie=UTF8&f_all=true&f_freeShipping=true&f_primeEligible=true`;
