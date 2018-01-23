@@ -5,7 +5,7 @@ const logger = require('logger').createLogger();
 const PRODUCTS = require('./products');
 
 function getProductUrl(product) {
-  return `https://www.amazon.com/gp/offer-listing/${product}/ref=olp_f_new?ie=UTF8&f_all=true&f_freeShipping=true&f_primeEligible=true`;
+  return `https://www.amazon.com/gp/offer-listing/${product}/ref=olp_f_new?ie=UTF8&f_all=true&f_freeShipping=true&f_primeEligible=true&f_new=true`;
 }
 
 async function checkProduct(browser, product) {
