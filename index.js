@@ -5,11 +5,10 @@ const logger = require('logger').createLogger();
 const PRODUCTS = require('./products');
 
 function getProductUrl(product) {
-  return `https://www.amazon.com/gp/offer-listing/${product}/ref=olp_f_new?ie=UTF8&f_all=true&f_freeShipping=true&f_primeEligible=true&f_new=true`;
+  return `https://www.amazon.com/gp/offer-listing/${product}/ref=olp_f_new?ie=UTF8&f_all=true&f_freeShipping=true&f_primeEligible=true`;
 }
 
-async function checkProduct(browser, product) {
-  const page = await browser.newPage();
+async function checkProduct(page, product) {
   page.setViewport({
     width: 1280,
     height: 768
@@ -23,31 +22,37 @@ async function checkProduct(browser, product) {
   logger.info(`Product: ${title.substring(28)}`);
 
   const amazonSeller = await page.$$('.olpSellerName img[alt~="Amazon.com"]');
-  await page.close();
   return amazonSeller.length > 0;
 }
 
 async function run() {
   logger.info(`Running product checks on ${PRODUCTS.length} products`);
   const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
-  for (let product of PRODUCTS) {
-    let inStock = await checkProduct(browser, product);
-    if (inStock) {
-      logger.log(`${product} is in stock`);
-      axios.post('https://hooks.zapier.com/hooks/catch/500091/8x9slt/', {
-        url: getProductUrl(product)
-      })
-    } else {
-      logger.log('Not in stock');
+  try {
+    for (let product of PRODUCTS) {
+      let page = await browser.newPage();
+      try {
+        let inStock = await checkProduct(page, product);
+        if (inStock) {
+          logger.log(`${product} is in stock`);
+          axios.post('https://hooks.zapier.com/hooks/catch/500091/8x9slt/', {
+            url: getProductUrl(product)
+          })
+        } else {
+          logger.log('Not in stock');
+        }
+        logger.log('- - - - - - -');
+      } finally {
+        await page.close();
+      }
     }
-    logger.log('- - - - - - -');
+  } finally {
+    browser.close()
   }
-  browser.close();
-  logger.info('Done checking products, sleeping');
-  logger.info('---------------------------------------------------');
-
   // check again in 30s
   setTimeout(run, 30 * 1000);
+  logger.info('Done checking products, sleeping');
+  logger.info('---------------------------------------------------');
 }
 
 run();
