@@ -45,9 +45,9 @@ async function run() {
   browser.close();
   logger.info('Done checking products, sleeping');
   logger.info('---------------------------------------------------');
+
+  // check again in 30s
+  setTimeout(run, 30 * 1000);
 }
 
 run();
-
-// check every 5 minutes
-setInterval(run, 5 * 60 * 1000);
